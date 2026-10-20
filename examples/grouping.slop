@@ -1,0 +1,2 @@
+— Parentheses group expressions and override the default precedence.
+hallucinate((1 + 2) * 3)✨
