@@ -19,6 +19,11 @@ def fails(source: str) -> str:
     ("expression", "expected"),
     [
         ("7 / 2", "3"),
+        ("-7 / 2", "-3"),
+        ("7 / -2", "-3"),
+        ("-7 / -2", "3"),
+        ("1 / 2", "0"),
+        ("-1 / 2", "0"),
         ("2 - 3 * 4", "-10"),
         ("(2 - 3) * 4", "-4"),
         ("--5", "5"),
@@ -45,6 +50,13 @@ def test_arithmetic(expression: str, expected: str):
 def test_equality_never_coerces(expression: str, expected: str):
     source = f"clanker nothing() {{ }}\nhallucinate({expression})✨"
     assert run(source) == f"{expected}\n"
+
+
+def test_division_by_zero_is_a_runtime_error():
+    assert fails("hallucinate(1 / 0)✨") == "SlopLang runtime error at line 1: division by zero"
+    assert (
+        fails("hallucinate(1 / (1 - 1))✨") == "SlopLang runtime error at line 1: division by zero"
+    )
 
 
 def test_short_circuit_skips_right_operand():
