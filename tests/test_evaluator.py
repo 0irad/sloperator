@@ -52,6 +52,26 @@ def test_equality_never_coerces(expression: str, expected: str):
     assert run(source) == f"{expected}\n"
 
 
+@pytest.mark.parametrize(
+    ("expression", "expected"),
+    [
+        ("1 + 2 * 3", "7"),
+        ("1 * 2 + 3", "5"),
+        ("10 - 2 - 3", "5"),
+        ("1 + 1 == 2", "✅"),
+        ("2 * 3 == 6", "✅"),
+        ("1 == 1 < 2", "❌"),  # parses as 1 == (1 < 2); comparison binds tighter
+        ("✅ == 1 < 2", "✅"),
+        ("5 < 3 == ❌", "✅"),
+        ("1 + 1 == 2 && 2 < 3", "✅"),
+        ("❌ || 1 + 2 * 3 == 7", "✅"),
+        ("1 < 2 == 2 < 3", "✅"),
+    ],
+)
+def test_operator_precedence(expression: str, expected: str):
+    assert run(f"hallucinate({expression})✨") == f"{expected}\n"
+
+
 def test_division_by_zero_is_a_runtime_error():
     assert fails("hallucinate(1 / 0)✨") == "SlopLang runtime error at line 1: division by zero"
     assert (

@@ -36,6 +36,18 @@ def test_same_precedence_is_left_associative():
     assert isinstance(expr.right, Literal) and expr.right.value == 2
 
 
+def test_multiplication_binds_tighter_than_addition():
+    expr = only_expression("1 + 2 * 3✨")
+    assert isinstance(expr, Binary) and expr.operator.type is TokenType.PLUS
+    assert isinstance(expr.right, Binary) and expr.right.operator.type is TokenType.STAR
+
+
+def test_comparison_binds_tighter_than_equality():
+    expr = only_expression("1 == 1 < 2✨")
+    assert isinstance(expr, Binary) and expr.operator.type is TokenType.EQUAL_EQUAL
+    assert isinstance(expr.right, Binary) and expr.right.operator.type is TokenType.LESS
+
+
 def test_grouping_overrides_precedence():
     expr = only_expression("(1 + 2) * 3✨")
     assert isinstance(expr, Binary) and expr.operator.type is TokenType.STAR
