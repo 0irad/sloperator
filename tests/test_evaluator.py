@@ -103,6 +103,43 @@ hallucinate(x)✨"""
     assert run(source) == "2\n"
 
 
+def test_load_bearing_variables_are_immutable_but_can_be_read_nested():
+    source = """loadbearing x = 1✨
+{
+    hallucinate(x)✨
+}"""
+    assert run(source) == "1\n"
+
+
+def test_load_bearing_assignment_from_nested_block_fails():
+    source = """loadbearing x = 1✨
+{
+    x = 2✨
+}"""
+    result = run_source(source)
+    assert result.stderr == "SlopLang runtime error at line 3: cannot assign to loadbearing 'x'\n"
+
+
+def test_load_bearing_shadows_like_slop():
+    source = """loadbearing x = 1✨
+{
+    loadbearing x = 2✨
+    hallucinate(x)✨
+}
+hallucinate(x)✨"""
+    assert run(source) == "2\n1\n"
+
+
+def test_load_bearing_loop_body_is_a_fresh_scope_each_iteration():
+    source = """slop i = 0✨
+ralph i < 2 {
+    loadbearing j = i✨
+    i = i + 1✨
+}
+hallucinate(i)✨"""
+    assert run(source) == "2\n"
+
+
 def test_loop_body_is_a_fresh_scope_each_iteration():
     source = """slop i = 0✨
 ralph i < 3 {

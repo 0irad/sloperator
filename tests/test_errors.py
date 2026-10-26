@@ -34,6 +34,12 @@ CASES = [
         "expected '=' after variable name, an initializer is required, found '✨'",
     ),
     (
+        "load-bearing x✨",
+        "syntax",
+        1,
+        "expected '=' after variable name, an initializer is required, found '✨'",
+    ),
+    (
         "vibe ✅ {\n    hallucinate(“open”)✨\n",
         "syntax",
         3,
@@ -43,6 +49,20 @@ CASES = [
     ("hallucinate(later())✨\nclanker later() {\n}", "runtime", 1, "undefined variable 'later'"),
     ("clanker f() {\n}\nf = 2✨", "runtime", 3, "cannot assign to immutable binding 'f'"),
     ("slop x = 1✨\nslop x = 2✨", "runtime", 2, "'x' is already declared in this scope"),
+    (
+        "load-bearing x = 1✨\nload-bearing x = 2✨",
+        "runtime",
+        2,
+        "'x' is already declared in this scope",
+    ),
+    (
+        "slop x = 1✨\nload-bearing x = 2✨",
+        "runtime",
+        2,
+        "'x' is already declared in this scope",
+    ),
+    ("load-bearing x = 1✨\nx = 2✨", "runtime", 2, "cannot assign to loadbearing 'x'"),
+    ("loadbearing x = 1✨\nx = 2✨", "runtime", 2, "cannot assign to loadbearing 'x'"),
     ("vibe 1 {\n}", "runtime", 1, "vibe condition must be a boolean, got number"),
     (
         "clanker add(a, b) {\n    ship a + b✨\n}\nhallucinate(add(1))✨",

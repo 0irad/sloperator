@@ -31,28 +31,29 @@ Prints `small slop` twice, then `big slop`.
 
 ## The Slop Words
 
-| SlopLang      | Conventional | Meaning                                                 |
-| ------------- | ------------ | ------------------------------------------------------- |
-| `slop`        | `let`        | Declare a mutable variable                              |
-| `clanker`     | `fn`         | Define a function                                       |
-| `vibe`        | `if`         | Conditional                                             |
-| `nah`         | `else`       | Else branch                                             |
-| `ralph`       | `while`      | Loop while a condition is `✅`                          |
-| `hallucinate` | `print`      | Print one value, then a newline                         |
-| `ship`        | `return`     | Return one value from a function                        |
-| `✨`          | `;`          | Statement terminator (required)                         |
-| `—`           | `//`         | Start a line comment                                    |
-| `“ ”`         | `" "`        | String delimiters (straight quotes are a lexical error) |
-| `✅`          | `true`       | Boolean true literal                                    |
-| `❌`          | `false`      | Boolean false literal                                   |
+| SlopLang       | Conventional | Meaning                                                 |
+| -------------- | ------------ | ------------------------------------------------------- |
+| `slop`         | `let`        | Declare a mutable variable                              |
+| `loadbearing`  | `const`      | Declare an immutable variable                           |
+| `clanker`      | `fn`         | Define a function                                       |
+| `vibe`         | `if`         | Conditional                                             |
+| `nah`          | `else`       | Else branch                                             |
+| `ralph`        | `while`      | Loop while a condition is `✅`                           |
+| `hallucinate`  | `print`      | Print one value, then a newline                         |
+| `ship`         | `return`     | Return one value from a function                        |
+| `✨`            | `;`          | Statement terminator (required)                         |
+| `—`            | `//`         | Start a line comment                                    |
+| `“ ”`          | `" "`        | String delimiters (straight quotes are a lexical error) |
+| `✅`            | `true`       | Boolean true literal                                    |
+| `❌`            | `false`      | Boolean false literal                                   |
 
-There are no other reserved words, and no `break`, `continue`, `for`, or `else if`.
+There are no other reserved words, and no `break`, `continue`, `for`, or `else if`. The immutable declaration keyword may also be written `load-bearing`.
 
 ## Source Text
 
 UTF-8, case-sensitive. Identifiers match `[A-Za-z_][A-Za-z0-9_]*`. Spaces, tabs, and newlines are whitespace; newlines do not end statements.
 
-Emoji tokens are `✨` (U+2728), `✅` (U+2705), and `❌` (U+274C), each optionally followed by the variation selector U+FE0F, which some keyboards emit. `✨` must follow variable declarations, assignments, `ship`, and expression statements. It never follows a block's closing brace. `—` (U+2014) starts a comment that runs to end of line.
+Emoji tokens are `✨` (U+2728), `✅` (U+2705), and `❌` (U+274C), each optionally followed by the variation selector U+FE0F, which some keyboards emit. `✨` must follow variable declarations (`slop` and `loadbearing`), assignments, `ship`, and expression statements. It never follows a block's closing brace. `—` (U+2014) starts a comment that runs to end of line.
 
 Strings open with `“` (U+201C), close with `”` (U+201D), and support escapes `\n`, `\t`, `\”`, and `\\`. A string cannot contain a raw newline. Unknown escapes and unterminated strings are lexical errors.
 
@@ -70,18 +71,18 @@ No implicit conversions.
 
 ## Variables
 
-`slop` declares a mutable variable and requires an initializer. A scope cannot declare a name twice, but an inner block may shadow an outer name.
+`slop` declares a mutable variable and `loadbearing` (also spelled `load-bearing`) declares an immutable one. Both require an initializer. A scope cannot declare a name twice, even across the two forms, but an inner block may shadow an outer name.
 
 ```slop
 slop score = 10✨
-slop LIMIT = 100✨
+loadbearing LIMIT = 100✨
 score = score + 5✨
 score = score + 1✨
 ```
 
-Assignment is a statement, not an expression: `name = expression✨`. It updates the nearest existing `slop` variable. Reading or assigning an undefined name is a runtime error.
+Assignment is a statement, not an expression: `name = expression✨`. It updates the nearest existing `slop` variable. Assigning to a `loadbearing` variable is a runtime error: `cannot assign to loadbearing 'LIMIT'`. Reading or assigning an undefined name is a runtime error.
 
-Every brace block is a lexical scope. Assignment searches the current scope, then each enclosing scope.
+Every brace block is a lexical scope. Both declarations follow the same scoping rules: a name is visible in its own block and inner blocks, and assignment searches the current scope, then each enclosing scope.
 
 ## Control Flow
 
@@ -152,7 +153,7 @@ functionDecl   -> "clanker" IDENTIFIER "(" parameters? ")" block ;
 parameters     -> IDENTIFIER ( "," IDENTIFIER )* ;
 
 declaration    -> variableDecl | statement ;
-variableDecl   -> "slop" IDENTIFIER "=" expression "✨" ;
+variableDecl   -> ( "slop" | "loadbearing" | "load-bearing" ) IDENTIFIER "=" expression "✨" ;
 
 statement      -> assignStmt | ifStmt | loopStmt | returnStmt
                 | block | expressionStmt ;

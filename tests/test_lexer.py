@@ -22,6 +22,37 @@ def test_keywords_operators_and_emoji():
     ]
 
 
+def test_loadbearing_keyword_is_one_token():
+    assert types("loadbearing x = 1✨") == [
+        TokenType.LOAD_BEARING,
+        TokenType.IDENTIFIER,
+        TokenType.EQUAL,
+        TokenType.NUMBER,
+        TokenType.SPARKLES,
+        TokenType.EOF,
+    ]
+
+
+def test_hyphenated_keyword_is_one_token():
+    assert types("load-bearing x = 1✨") == [
+        TokenType.LOAD_BEARING,
+        TokenType.IDENTIFIER,
+        TokenType.EQUAL,
+        TokenType.NUMBER,
+        TokenType.SPARKLES,
+        TokenType.EOF,
+    ]
+
+
+def test_hyphen_is_still_subtraction():
+    assert types("load - bearing") == [
+        TokenType.IDENTIFIER,
+        TokenType.MINUS,
+        TokenType.IDENTIFIER,
+        TokenType.EOF,
+    ]
+
+
 def test_two_character_operators_are_greedy():
     assert types("== != <= >= ||") == [
         TokenType.EQUAL_EQUAL,

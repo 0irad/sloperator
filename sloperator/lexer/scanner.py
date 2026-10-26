@@ -142,6 +142,14 @@ class Scanner:
         while is_identifier_char(self.peek()):
             self.advance()
         text = self.source[self.start : self.current]
+        if self.peek() == "-":
+            end = self.current + 1
+            while end < len(self.source) and is_identifier_char(self.source[end]):
+                end += 1
+            candidate = self.source[self.start : end]
+            if candidate in KEYWORDS:
+                self.current = end
+                text = candidate
         self.add_token(KEYWORDS.get(text, TokenType.IDENTIFIER))
 
     def add_token(self, type: TokenType, literal: int | str | None = None) -> None:
