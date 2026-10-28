@@ -82,6 +82,11 @@ def test_string_may_contain_em_dash_and_opening_quote():
     assert tokenize("“x — “y”")[0].literal == "x — “y"
 
 
+def test_comment_does_not_eat_the_following_line_number():
+    tokens = tokenize("— comment\nx = 1✨")
+    assert [token.line for token in tokens] == [2, 2, 2, 2, 2]
+
+
 @pytest.mark.parametrize(
     ("source", "line", "message"),
     [
