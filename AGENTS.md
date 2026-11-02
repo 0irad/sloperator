@@ -7,7 +7,7 @@ Sloperator is a Python 3.13 tree-walking interpreter for SlopLang. Runtime depen
 - `sloperator.py` — CLI entry point.
 - `sloperator/` — pipeline stages: `lexer/` → `parser/` → `evaluator/`, wired together by `runner.py`; shared diagnostics live in `errors.py`.
 - `docs/spec.md` — source of truth for the language.
-- `tests/` — pytest suite. `test_examples.py` auto-discovers `examples/*.slop`.
+- `tests/` — pytest suite. `test_example_outputs.py` pins exact stdout for every `examples/*.slop`.
 - `examples/` — runnable `.slop` programs.
 - `playground/server.py` — web playground that shells out to the CLI.
 - `.opencode/` — agent tooling, including the `run_slop` tool and the `validate` skill.
@@ -23,7 +23,7 @@ Run from the repo root with `uv`, in this order:
 3. Lint: `uv run ruff check`
 4. Types: `uv run ty check`
 
-There is no CI or pre-commit, so run these locally. The `validate` skill runs the first three. For a single test: `uv run pytest tests/test_parser.py::test_name`. For comparison and operator-precedence tests: `uv run pytest tests/test_comparisons.py`.
+There is no CI or pre-commit, so run these locally. The `validate` skill runs all four. For a single test: `uv run pytest tests/test_parser.py::test_name`. For comparison and operator-precedence tests: `uv run pytest tests/test_comparisons.py`.
 
 ## Regression tests
 
