@@ -51,9 +51,11 @@
         "type": "remote",
         "url": "https://mcp.context7.com/mcp"
       },
+      // Kept configured but disconnected; remove "disabled" to reconnect.
       "notion": {
         "type": "remote",
-        "url": "https://mcp.notion.com/mcp"
+        "url": "https://mcp.notion.com/mcp",
+        "disabled": true
       }
     }
   },
