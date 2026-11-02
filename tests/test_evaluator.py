@@ -1,5 +1,12 @@
+from io import StringIO
+
 import pytest
 
+from sloperator.evaluator import Interpreter
+from sloperator.evaluator.environment import BindingKind
+from sloperator.evaluator.values import Builtin, Value
+from sloperator.lexer import tokenize
+from sloperator.parser import parse
 from sloperator.runner import run_source
 
 
@@ -32,6 +39,25 @@ def fails(source: str) -> str:
 )
 def test_arithmetic(expression: str, expected: str):
     assert run(f"hallucinate({expression})✨") == f"{expected}\n"
+
+
+@pytest.mark.parametrize(
+    ("expression", "expected"),
+    [
+        ("!✅", "❌"),
+        ("!❌", "✅"),
+        ("!!✅", "✅"),
+        ("!!!❌", "✅"),
+        ("!(1 == 1)", "❌"),
+        ("!(1 > 2)", "✅"),
+    ],
+)
+def test_unary_not(expression: str, expected: str):
+    assert run(f"hallucinate({expression})✨") == f"{expected}\n"
+
+
+def test_unary_not_accepts_multiple_arguments():
+    assert run("hallucinate(!✅, !❌, !!✅)✨") == "❌ ✅ ✅\n"
 
 
 @pytest.mark.parametrize(
@@ -193,6 +219,8 @@ hallucinate(find())✨"""
     ("source", "message"),
     [
         ("hallucinate(-“a”)✨", "operand of unary '-' must be a number, got string"),
+        ("hallucinate(!1)✨", "operand of unary '!' must be a boolean, got number"),
+        ("hallucinate(!“a”)✨", "operand of unary '!' must be a boolean, got string"),
         ("hallucinate(“a” < “b”)✨", "operands of '<' must be numbers, got string and string"),
         ("hallucinate(1 - ✅)✨", "operands of '-' must be numbers, got number and boolean"),
         ("ralph 0 { }", "ralph condition must be a boolean, got number"),
@@ -223,6 +251,21 @@ hallucinate(1)✨
 hallucinate(1, 2, 3)✨
 hallucinate(“slop”, ✅, ❌, f, f(), hallucinate)✨"""
     assert run(source) == ("\n1\n1 2 3\nslop ✅ ❌ <clanker f> nil <clanker hallucinate>\n")
+
+
+def test_builtins_receive_arguments_as_immutable_tuples():
+    received: list[tuple[Value, ...]] = []
+
+    def probe(arguments: tuple[Value, ...], line: int) -> Value:
+        received.append(arguments)
+        return None
+
+    interpreter = Interpreter(StringIO())
+    interpreter.globals.declare("probe", Builtin("probe", probe), BindingKind.IMMUTABLE, 0)
+    interpreter.run(parse(tokenize("probe(1 + 2, ✅)✨\nprobe()✨")))
+
+    assert received == [(3, True), ()]
+    assert all(isinstance(arguments, tuple) for arguments in received)
 
 
 def test_variation_selector_after_emoji_is_accepted():

@@ -42,6 +42,11 @@ def run(source: str) -> str:
         # Unary minus binds tighter than *.
         ("-2 * 3", "-6"),
         ("--5", "5"),
+        # Unary ! binds tighter than comparison, equality, &&, and ||.
+        ("!❌ == ✅", "✅"),
+        ("!✅ || ✅", "✅"),
+        ("!❌ && ❌", "❌"),
+        ("!!✅", "✅"),
     ],
 )
 def test_operator_precedence(expression: str, expected: str):

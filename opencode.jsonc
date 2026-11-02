@@ -39,5 +39,10 @@
     { "action": "shell", "resource": "bootdev run *", "effect": "allow" },
     // Never launch the explore subagent in this project.
     { "action": "subagent", "resource": "explore", "effect": "deny" },
+    // Ask before loading the example-writing skill.
+    { "action": "skill", "resource": "create-test-program", "effect": "ask" },
+    // Prohibits opening .secretes and .env files
+    { "action": "read", "resource": "*.secrets", "effect": "deny" },
+    { "action": "read", "resource": "*.env", "effect": "deny" },
   ],
 }
