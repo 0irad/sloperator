@@ -56,6 +56,37 @@
         "type": "remote",
         "url": "https://mcp.notion.com/mcp",
         "disabled": true
+      },
+      // Bare "bunx" resolves through ~/.local/bin/bunx, which symlinks to
+      // ~/.bun/bin/bun: ~/.bun/bin itself is not on the PATH inherited by the
+      // OpenCode service (non-interactive shells skip the .bashrc export).
+      // Disabled in favour of chrome-devtools; remove "disabled" to reconnect.
+      "playwright": {
+        "type": "local",
+        "command": [
+          "bunx",
+          "--bun",
+          "@playwright/mcp@0.0.80",
+          "--isolated",
+          "--browser",
+          "chromium"
+        ],
+        "disabled": true
+      },
+      // -e points at Playwright's Chromium: the Chrome for Testing build that
+      // chrome-devtools-mcp downloads by default (153) dies on launch here with
+      // "Target closed". --headless keeps it off the WSLg desktop.
+      "chrome-devtools": {
+        "type": "local",
+        "command": [
+          "bunx",
+          "--bun",
+          "chrome-devtools-mcp@latest",
+          "--isolated",
+          "--headless",
+          "-e",
+          "/home/dida/.cache/ms-playwright/chromium-1243/chrome-linux64/chrome"
+        ]
       }
     }
   },

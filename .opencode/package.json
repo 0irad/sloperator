@@ -1,6 +1,7 @@
 {
   "private": true,
   "dependencies": {
-    "@opencode/plugin": "2.0.3"
+    "@opencode/plugin": "2.0.3",
+    "playwright": "1.63.0"
   }
 }
