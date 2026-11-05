@@ -123,23 +123,23 @@ ralph count < MAX {
             body: JSON.stringify({ source: source.value }),
           });
           const result = await response.json();
-          if (result.stderr) {
-            output.textContent = "";
-            return;
-          }
-          output.textContent = result.stdout;
-          if (result.stderr) {
-            const err = document.createElement("span");
-            err.className = "err";
-            err.textContent = result.stderr;
-            output.appendChild(err);
-          }
-          if (!result.stdout && !result.stderr) {
-            output.textContent = "(no output)";
-          }
+          renderResult(result);
         } catch (error) {
           output.textContent =
             "Could not reach the playground server: " + error;
+        }
+      }
+
+      function renderResult(result) {
+        output.textContent = result.stdout;
+        if (result.stderr) {
+          const err = document.createElement("span");
+          err.className = "err";
+          err.textContent = result.stderr;
+          output.appendChild(err);
+        }
+        if (!result.stdout && !result.stderr) {
+          output.textContent = "(no output)";
         }
       }
 
