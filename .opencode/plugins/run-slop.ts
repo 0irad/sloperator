@@ -73,5 +73,15 @@ export default Plugin.define({
         },
       });
     });
+
+    // Keep usage guidance separate from the tool's implementation so the
+    // registration above stays focused on running Sloperator.
+    await ctx.tool.transform((tools) => {
+      tools.update("run_slop", (tool) => {
+        tool.description +=
+          "\n\nUse this tool to run individual `.slop` " +
+          "examples when checking language behavior. Use the test suite for regression testing.";
+      });
+    });
   },
 });
